@@ -16,10 +16,6 @@ class BaseManager(models.Manager):
     def default_queryset(self):
         return super().get_queryset()
 
-    async def async_all(self, *args, **kwargs):
-        func = lambda: list(self.get_queryset().all())  # noqa
-        return await sync_to_async(func)()
-
 
 class TimeStampedBaseModel(models.Model):
     class Meta:
@@ -44,3 +40,8 @@ class TimeStampedBaseModel(models.Model):
 
     async def _hard_delete(self, *args, **kwargs):
         await super().adelete(*args, **kwargs)
+
+    @classmethod
+    async def fetch_all(cls):
+        func = lambda: list(cls.objects.all())  # noqa
+        return await sync_to_async(func)()
