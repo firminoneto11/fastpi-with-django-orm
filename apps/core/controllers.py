@@ -42,5 +42,4 @@ async def delete_product(product_id: str) -> None:
         raise HTTPException(
             status_code=404, detail=f"Product of id {product_id!r} not found"
         )
-
     await product.adelete()
