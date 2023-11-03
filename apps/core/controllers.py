@@ -10,6 +10,11 @@ async def list_products() -> dict[str, list[ProductSchema]]:
     return {"details": qs}
 
 
+async def create_product(data: ProductInput) -> ProductSchema:
+    product = await Product.objects.acreate(name=data.name)
+    return product
+
+
 async def get_product_by_id(product_id: str) -> ProductSchema:
     try:
         product = await Product.objects.aget(id=product_id)
@@ -17,11 +22,6 @@ async def get_product_by_id(product_id: str) -> ProductSchema:
         raise HTTPException(
             status_code=404, detail=f"Product of id {product_id!r} not found"
         )
-    return product
-
-
-async def create_product(data: ProductInput) -> ProductSchema:
-    product = await Product.objects.acreate(name=data.name)
     return product
 
 
