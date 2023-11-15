@@ -1,5 +1,6 @@
 from asyncio import new_event_loop, set_event_loop
 
+from httpx import AsyncClient
 from pytest import fixture
 from uvloop import install as install_uvloop
 
@@ -20,3 +21,20 @@ def event_loop():
     loop.run_until_complete(loop.shutdown_asyncgens())
     loop.run_until_complete(loop.shutdown_default_executor())
     loop.close()
+
+
+@fixture(scope="session")
+def app():
+    """Returns a FastAPI app instance"""
+
+    from conf.asgi import app
+
+    return app
+
+
+@fixture
+async def client(app):
+    """Returns a TestClient instance"""
+
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        yield client

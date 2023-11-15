@@ -10,21 +10,26 @@ from .controllers import (
 
 router = APIRouter(prefix="/v1", tags=["Core"])
 
-router.add_api_route(path="/products", endpoint=list_products, methods=["GET"])
-
 router.add_api_route(
-    path="/products/{product_id}", endpoint=get_product_by_id, methods=["GET"]
+    path="/products", endpoint=list_products, methods=["GET"], status_code=200
 )
 
 router.add_api_route(
-    path="/products",
-    endpoint=create_product,
-    methods=["POST"],
-    status_code=201,
+    path="/products", endpoint=create_product, methods=["POST"], status_code=201
 )
 
 router.add_api_route(
-    path="/products/{product_id}", endpoint=update_product, methods=["PUT"]
+    path="/products/{product_id}",
+    endpoint=get_product_by_id,
+    methods=["GET"],
+    status_code=200,
+)
+
+router.add_api_route(
+    path="/products/{product_id}",
+    endpoint=update_product,
+    methods=["PUT"],
+    status_code=200,
 )
 
 router.add_api_route(
