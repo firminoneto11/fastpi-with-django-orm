@@ -19,10 +19,11 @@ async def test_list_products_should_list_registered_products(client: "AsyncClien
     """
 
     products = [
-        ProductSchema.model_validate(await Product.objects.acreate(name=name))
+        ProductSchema.model_validate(
+            await Product.objects.acreate(name=name)
+        ).model_dump(mode="json")
         for name in ("Product 1", "Product 2", "Product 3")
     ]
-    products = [product.model_dump(mode="json") for product in products]
 
     response = await client.get("api/v1/products")
 
