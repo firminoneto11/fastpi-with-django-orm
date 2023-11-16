@@ -1,5 +1,5 @@
 dev:
-	uvicorn conf.asgi:app --reload
+	uvicorn conf.asgi:app --reload --port 8001
 
 migrations:
 	python manage.py makemigrations

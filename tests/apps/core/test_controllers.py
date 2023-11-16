@@ -41,3 +41,27 @@ async def test_list_products_should_return_empty(client: "AsyncClient"):
 
     assert response.status_code == 200
     assert response.json() == {"details": []}
+
+
+@mark.e2e
+async def test_create_products(client: "AsyncClient"):
+    """
+    Test if the endpoint creates a new product
+    """
+
+    payload = {"name": "Product 1"}
+    products_before = await Product.objects.acount()
+
+    response = await client.post("api/v1/products", json=payload)
+
+    products_after = await Product.objects.acount()
+    product_created = await Product.objects.afirst()
+    result_schema = ProductSchema.model_validate(product_created).model_dump(
+        mode="json"
+    )
+
+    assert not products_before
+    assert products_after == products_before + 1
+    assert response.status_code == 201
+    assert product_created.name == payload["name"]
+    assert response.json() == result_schema
