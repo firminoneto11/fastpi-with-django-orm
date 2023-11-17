@@ -51,7 +51,7 @@ class TimeStampedBaseModel(models.Model):
         changed = False
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
         for key in to_update:
-            if key in self._allowed_fields:
+            if key in self._editable_fields():
                 current_value, new_value = getattr(self, key), to_update[key]
                 if current_value != new_value:
                     setattr(self, key, new_value)
@@ -59,11 +59,11 @@ class TimeStampedBaseModel(models.Model):
         if changed and save:
             await self.asave()
 
-    @property
-    def _allowed_fields(self) -> set[str]:
+    @classmethod
+    def _editable_fields(cls) -> set[str]:
         SYS_FIELDS = ("id", "deleted", "created_at", "updated_at", "deleted_at")
         return {
-            field.name for field in self._meta.fields if field.name not in SYS_FIELDS
+            field.name for field in cls._meta.fields if field.name not in SYS_FIELDS
         }
 
     @classmethod
