@@ -19,6 +19,7 @@ class BaseManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(deleted=False)
 
+    # TODO: How to type hint this?
     def default_queryset(self):
         return super().get_queryset()
 
@@ -63,12 +64,15 @@ class TimeStampedBaseModel(models.Model):
 
     @classmethod
     def _editable_fields(cls) -> set[str]:
-        SYS_FIELDS = ("id", "deleted", "created_at", "updated_at", "deleted_at")
+        SYS_FIELDS = {"id", "deleted", "created_at", "updated_at", "deleted_at"}
         return {
             field.name for field in cls._meta.fields if field.name not in SYS_FIELDS
         }
 
     @classmethod
-    async def fetch_all(cls):
-        func = lambda: list(cls.objects.all())  # noqa
+    async def fetch_all(cls, with_deleted: bool = False):
+        if with_deleted:
+            func = lambda: list(cls.objects.default_queryset())  # noqa
+        else:
+            func = lambda: list(cls.objects.all())  # noqa
         return await sync_to_async(func)()
