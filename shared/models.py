@@ -1,8 +1,14 @@
+from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import uuid4
 
 from asgiref.sync import sync_to_async
 from django.db import models
 from django.utils.timezone import now
+
+if TYPE_CHECKING:
+    from pydantic import BaseModel
+
+    UpdateModel = TypeVar("UpdateModel", BaseModel, dict[str, Any])
 
 
 def generate_uuid():
@@ -32,14 +38,33 @@ class TimeStampedBaseModel(models.Model):
 
     objects = BaseManager()
 
-    async def adelete(self, *args, **kwargs):
+    async def adelete(self):
         self.deleted = True
         self.deleted_at = now()
-        # Should we emit signals?
-        await self.asave(*args, **kwargs)
+        # TODO: Emit signals
+        await self.asave()
 
     async def _hard_delete(self, *args, **kwargs):
         await super().adelete(*args, **kwargs)
+
+    async def update(self, data: "UpdateModel", save: bool = False):
+        changed = False
+        to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
+        for key in to_update:
+            if key in self._allowed_fields:
+                current_value, new_value = getattr(self, key), to_update[key]
+                if current_value != new_value:
+                    setattr(self, key, new_value)
+                    changed = True
+        if changed and save:
+            await self.asave()
+
+    @property
+    def _allowed_fields(self) -> set[str]:
+        SYS_FIELDS = ("id", "deleted", "created_at", "updated_at", "deleted_at")
+        return {
+            field.name for field in self._meta.fields if field.name not in SYS_FIELDS
+        }
 
     @classmethod
     async def fetch_all(cls):

@@ -30,8 +30,7 @@ async def update_product(product_id: str, data: ProductInput) -> ProductSchema:
         raise HTTPException(
             status_code=404, detail=f"Product of id {product_id!r} not found"
         )
-    product.name = data.name
-    await product.asave()
+    await product.update(data=data, save=True)
     return product
 
 
