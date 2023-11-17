@@ -22,6 +22,7 @@ pytest-asyncio = "^0.21.1"
 pytest-env = "^1.1.1"
 pytest-django = "^4.7.0"
 pytest-sugar = "^0.9.7"
+coverage = "^7.3.2"
 
 [tool.ruff]
 line-length = 88
@@ -42,3 +43,18 @@ asyncio_mode = "auto"
 
 [tool.pytest_env]
 ENVIRONMENT = "test"
+
+[tool.coverage.run]
+omit = ["*test*", "manage.py", "*conftest.py"]
+data_file = ".coverage/coverage"
+branch = true
+
+[tool.coverage.report]
+skip_covered = true
+precision = 2
+fail_under = 80
+exclude_also = ["if TYPE_CHECKING:"]
+
+[tool.coverage.html]
+directory = ".coverage/html-report"
+skip_covered = true

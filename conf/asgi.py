@@ -7,17 +7,9 @@ For more information on this file, see
 https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 import os
-from contextlib import asynccontextmanager
 
 from django.core.asgi import get_asgi_application
 from fastapi import FastAPI
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup handler
-    yield
-    # Shutdown handler
 
 
 def get_fastapi_application():
@@ -25,9 +17,7 @@ def get_fastapi_application():
 
     from .urls import routers
 
-    application_ = FastAPI(
-        lifespan=lifespan, debug=settings.DEBUG, title=settings.FASTAPI_TITLE
-    )
+    application_ = FastAPI(debug=settings.DEBUG, title=settings.FASTAPI_TITLE)
 
     # Place middleware here
 

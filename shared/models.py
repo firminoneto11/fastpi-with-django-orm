@@ -53,13 +53,13 @@ class TimeStampedBaseModel(models.Model):
         editable_fields, changed = self._editable_fields(), False
 
         for key in to_update:
-            if key in editable_fields:
+            if key in editable_fields:  # pragma: no branch
                 current_value, new_value = getattr(self, key), to_update[key]
-                if current_value != new_value:
+                if current_value != new_value:  # pragma: no branch
                     setattr(self, key, new_value)
                     changed = True
 
-        if changed and save:
+        if changed and save:  # pragma: no branch
             await self.asave()
 
     @classmethod

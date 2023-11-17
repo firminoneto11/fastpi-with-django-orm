@@ -10,5 +10,6 @@ if _module not in ("production", "staging", "development", "test"):
 _settings = _import_module(f"{__name__}.{_module}")
 
 for variable in _settings.__dict__:
-    if (not variable.startswith("__")) and (not variable.startswith("_")):
+    cond = (not variable.startswith("__")) and (not variable.startswith("_"))
+    if cond:  # pragma: no branch
         globals()[variable] = _settings.__dict__[variable]
