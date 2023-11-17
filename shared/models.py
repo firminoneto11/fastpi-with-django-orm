@@ -48,14 +48,16 @@ class TimeStampedBaseModel(models.Model):
         await super().adelete(*args, **kwargs)
 
     async def update(self, data: "UpdateModel", save: bool = False):
-        changed = False
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
+        editable_fields, changed = self._editable_fields(), False
+
         for key in to_update:
-            if key in self._editable_fields():
+            if key in editable_fields:
                 current_value, new_value = getattr(self, key), to_update[key]
                 if current_value != new_value:
                     setattr(self, key, new_value)
                     changed = True
+
         if changed and save:
             await self.asave()
 
