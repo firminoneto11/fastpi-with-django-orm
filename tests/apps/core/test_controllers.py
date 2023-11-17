@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 pytestmark = [mark.django_db(transaction=True)]
 
 
-@mark.e2e
+@mark.integration
 async def test_list_products_should_list_registered_products(client: "AsyncClient"):
     """
     Test if the endpoint returns a list of registered products
@@ -31,7 +31,7 @@ async def test_list_products_should_list_registered_products(client: "AsyncClien
     assert response.json() == {"details": products}
 
 
-@mark.e2e
+@mark.integration
 async def test_list_products_should_return_empty(client: "AsyncClient"):
     """
     Test if the endpoint returns an empty list when there are no registered products
@@ -43,7 +43,7 @@ async def test_list_products_should_return_empty(client: "AsyncClient"):
     assert response.json() == {"details": []}
 
 
-@mark.e2e
+@mark.integration
 async def test_create_products(client: "AsyncClient"):
     """
     Test if the endpoint creates a new product
