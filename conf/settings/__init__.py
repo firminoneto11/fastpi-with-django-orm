@@ -1,6 +1,6 @@
 from importlib import import_module as _import_module
 
-from shared.env import get_env as _get_env
+from shared.utils import get_env as _get_env
 
 _module = _get_env().str("ENVIRONMENT", "development").lower().strip()
 

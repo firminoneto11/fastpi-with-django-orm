@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from pathlib import Path as _Path
 
-from shared.env import get_env as _get_env
+from shared.utils import get_env as _get_env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = _Path(__file__).resolve().parent.parent.parent
