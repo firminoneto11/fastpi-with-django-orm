@@ -6,7 +6,8 @@ from .schemas import ProductInput
 
 
 async def list_products() -> dict[str, list[ProductSchema]]:
-    return {"details": await Product.fetch_all()}
+    qs = Product.objects.all()
+    return {"details": await Product.objects.fetch_qs(qs=qs)}
 
 
 async def create_product(data: ProductInput) -> ProductSchema:

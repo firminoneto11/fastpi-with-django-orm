@@ -157,7 +157,8 @@ async def test_delete_product_should_delete_the_product(client: "AsyncClient"):
 
     response = await client.delete(f"api/v1/products/{product.id}")
 
-    in_database = await Product.fetch_all(with_deleted=True)
+    qs = Product.objects.with_deleted()
+    in_database = await Product.objects.fetch_qs(qs=qs)
 
     assert response.status_code == 204
     assert not await Product.objects.acount()
