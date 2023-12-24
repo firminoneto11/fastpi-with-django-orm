@@ -27,9 +27,9 @@ def event_loop():
 def app():
     """Returns a FastAPI app instance"""
 
-    from conf.gateways.fastapi import app
+    from conf.gateways.fastapi import application
 
-    return app
+    return application
 
 
 @fixture
