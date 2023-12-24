@@ -1,7 +1,14 @@
 cov := rm -rf .coverage/; coverage run -m pytest
 
+env:
+	rm -rf venv
+	python3.12 -m venv venv
+
+deps:
+	poetry install --no-root
+
 dev:
-	uvicorn conf.asgi:app --reload --port 8001
+	uvicorn conf.gateways.fastapi:app --reload --port 8001
 
 migrations:
 	python manage.py makemigrations
