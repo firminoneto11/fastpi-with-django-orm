@@ -1,4 +1,4 @@
-cov := rm -rf .coverage/; coverage run -m pytest
+cov := coverage run -m pytest
 
 env:
 	rm -rf venv
