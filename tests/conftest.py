@@ -27,7 +27,7 @@ def event_loop():
 def app():
     """Returns a FastAPI app instance"""
 
-    from conf.asgi import app
+    from conf.gateways.fastapi import app
 
     return app
 
