@@ -8,7 +8,7 @@ deps:
 	poetry install --no-root
 
 dev:
-	uvicorn conf.gateways.fastapi:app --reload --port 8001
+	uvicorn conf.gateways.fastapi:application --reload --port 8001
 
 migrations:
 	python manage.py makemigrations

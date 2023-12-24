@@ -22,4 +22,4 @@ environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 
 
 setup(set_prefix=False)
-app = get_fastapi_application()
+application = get_fastapi_application()
