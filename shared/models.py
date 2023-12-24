@@ -1,36 +1,36 @@
-from typing import TYPE_CHECKING, Any, TypeVar
-from uuid import uuid4
+from typing import TYPE_CHECKING, Any, Self
 
 from asgiref.sync import sync_to_async
 from django.db import models
 from django.utils.timezone import now
 
+from .utils import generate_uuid
+
 if TYPE_CHECKING:
     from pydantic import BaseModel
 
-    UpdateModel = TypeVar("UpdateModel", BaseModel, dict[str, Any])
 
-
-def generate_uuid():
-    return uuid4().hex
-
-
-class BaseManager(models.Manager):
+class BaseManager[M: models.Model](models.Manager[M]):
     def get_queryset(self):
         return super().get_queryset().filter(deleted=False)
 
-    # TODO: How to type hint this?
-    def default_queryset(self):
+    def with_deleted(self):
         return super().get_queryset()
+
+    async def fetch_qs(self, qs: models.QuerySet[M]):
+        return await sync_to_async(lambda: list(qs))()
 
 
 class TimeStampedBaseModel(models.Model):
+    if TYPE_CHECKING:
+        objects: BaseManager[Self]
+
     class Meta:
         abstract = True
 
-    id = models.CharField(
-        primary_key=True, unique=True, default=generate_uuid, max_length=32
-    )
+    pk_id: int = models.BigAutoField(primary_key=True)
+    id = models.CharField(unique=True, default=generate_uuid, max_length=36)
+
     deleted = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,12 +43,15 @@ class TimeStampedBaseModel(models.Model):
         self.deleted = True
         self.deleted_at = now()
         # TODO: Emit signals
+        # TODO: Cascade delete to related objects by updating their deleted_at and deleted  # noqa
         await self.asave()
 
-    async def _hard_delete(self, *args, **kwargs):
+    async def hard_delete(self, *args, **kwargs):
         await super().adelete(*args, **kwargs)
 
-    async def update(self, data: "UpdateModel", save: bool = False):
+    async def update[T: "BaseModel" | dict[str, Any]](
+        self, data: T, save: bool = False
+    ):
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
         editable_fields, changed = self._editable_fields(), False
 
@@ -64,15 +67,14 @@ class TimeStampedBaseModel(models.Model):
 
     @classmethod
     def _editable_fields(cls) -> set[str]:
-        SYS_FIELDS = {"id", "deleted", "created_at", "updated_at", "deleted_at"}
+        SYS_FIELDS = {
+            "pk_id",
+            "id",
+            "deleted",
+            "created_at",
+            "updated_at",
+            "deleted_at",
+        }
         return {
             field.name for field in cls._meta.fields if field.name not in SYS_FIELDS
         }
-
-    @classmethod
-    async def fetch_all(cls, with_deleted: bool = False):
-        if with_deleted:
-            func = lambda: list(cls.objects.default_queryset())  # noqa
-        else:
-            func = lambda: list(cls.objects.all())  # noqa
-        return await sync_to_async(func)()
