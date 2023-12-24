@@ -1,17 +1,17 @@
-from asyncio import new_event_loop, set_event_loop
+import asyncio as aio
 
 from httpx import AsyncClient
 from pytest import fixture
-from uvloop import install as install_uvloop
+from uvloop import EventLoopPolicy
 
 
 @fixture(scope="session", autouse=True)
 def event_loop():
     """Overrides pytest's default function scoped event loop"""
+    aio.set_event_loop_policy(EventLoopPolicy())
 
-    install_uvloop()
-    loop = new_event_loop()
-    set_event_loop(loop=loop)
+    loop = aio.new_event_loop()
+    aio.set_event_loop(loop)
 
     yield loop
 
