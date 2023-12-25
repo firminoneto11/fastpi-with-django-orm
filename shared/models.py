@@ -49,9 +49,7 @@ class TimeStampedBaseModel(models.Model):
     async def hard_delete(self, *args, **kwargs):
         await super().adelete(*args, **kwargs)
 
-    async def update[T: "BaseModel" | dict[str, Any]](
-        self, data: T, save: bool = False
-    ):
+    async def update(self, data: "BaseModel" | dict[str, Any], save: bool = False):
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
         editable_fields, changed = self._editable_fields(), False
 
