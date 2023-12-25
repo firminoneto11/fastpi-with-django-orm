@@ -3,11 +3,9 @@ from typing import TYPE_CHECKING, Any, Self
 from asgiref.sync import sync_to_async
 from django.db import models
 from django.utils.timezone import now
+from pydantic import BaseModel
 
 from .utils import generate_uuid
-
-if TYPE_CHECKING:
-    from pydantic import BaseModel
 
 
 class BaseManager[M: models.Model](models.Manager[M]):
@@ -49,7 +47,7 @@ class TimeStampedBaseModel(models.Model):
     async def hard_delete(self, *args, **kwargs):
         await super().adelete(*args, **kwargs)
 
-    async def update(self, data: "BaseModel" | dict[str, Any], save: bool = False):
+    async def update(self, data: BaseModel | dict[str, Any], save: bool = False):
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
         editable_fields, changed = self._editable_fields(), False
 
