@@ -17,13 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from apps.core.urls import router as core_router
+from apps import collect_routers
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 ]
 
 
-routers = [
-    core_router,
-]
+fastapi_routers = collect_routers()

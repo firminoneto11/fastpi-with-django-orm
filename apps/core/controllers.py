@@ -1,45 +1,30 @@
-from fastapi import HTTPException
+from typing import Optional
 
-from .models import Product
-from .schemas import Product as ProductSchema
-from .schemas import ProductInput
-
-
-async def list_products() -> dict[str, list[ProductSchema]]:
-    qs = Product.objects.all()
-    return {"details": await Product.objects.fetch_qs(qs=qs)}
+from .schemas import ProductInputSchema, ProductSchema
+from .services import ProductService
 
 
-async def create_product(data: ProductInput) -> ProductSchema:
-    return await Product.objects.acreate(name=data.name)
+class ProductsController:
+    @staticmethod
+    async def get(
+        product_id: Optional[str] = None
+    ) -> dict[str, list[ProductSchema]] | ProductSchema:
+        svc = ProductService()
+        if product_id:
+            return await svc.get_product_by_id(product_id=product_id)
+        return await svc.list_products()
 
+    @staticmethod
+    async def post(data: ProductInputSchema) -> ProductSchema:
+        svc = ProductService()
+        return await svc.create_product(data)
 
-async def get_product_by_id(product_id: str) -> ProductSchema:
-    try:
-        product = await Product.objects.aget(id=product_id)
-    except Product.DoesNotExist:
-        raise HTTPException(
-            status_code=404, detail=f"Product of id {product_id!r} not found"
-        )
-    return product
+    @staticmethod
+    async def put(product_id: str, data: ProductInputSchema) -> ProductSchema:
+        svc = ProductService()
+        return await svc.update_product(product_id=product_id, data=data)
 
-
-async def update_product(product_id: str, data: ProductInput) -> ProductSchema:
-    try:
-        product = await Product.objects.aget(id=product_id)
-    except Product.DoesNotExist:
-        raise HTTPException(
-            status_code=404, detail=f"Product of id {product_id!r} not found"
-        )
-    await product.update(data=data, save=True)
-    return product
-
-
-async def delete_product(product_id: str) -> None:
-    try:
-        product = await Product.objects.aget(id=product_id)
-    except Product.DoesNotExist:
-        raise HTTPException(
-            status_code=404, detail=f"Product of id {product_id!r} not found"
-        )
-    await product.adelete()
+    @staticmethod
+    async def delete(product_id: str) -> None:
+        svc = ProductService()
+        return await svc.delete(product_id=product_id)

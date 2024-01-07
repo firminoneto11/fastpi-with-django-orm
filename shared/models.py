@@ -3,9 +3,13 @@ from typing import TYPE_CHECKING, Any, Self
 from asgiref.sync import sync_to_async
 from django.db import models
 from django.utils.timezone import now
-from pydantic import BaseModel
 
 from .utils import generate_uuid
+
+if TYPE_CHECKING:
+    from pydantic import BaseModel
+
+    type UpdateData = BaseModel | dict[str, Any]
 
 
 class BaseManager[M: models.Model](models.Manager[M]):
@@ -20,9 +24,6 @@ class BaseManager[M: models.Model](models.Manager[M]):
 
 
 class TimeStampedBaseModel(models.Model):
-    if TYPE_CHECKING:
-        objects: BaseManager[Self]
-
     class Meta:
         abstract = True
 
@@ -35,7 +36,7 @@ class TimeStampedBaseModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)
 
-    objects = BaseManager()
+    objects: BaseManager[Self] = BaseManager()
 
     async def adelete(self):
         self.deleted = True
@@ -47,22 +48,23 @@ class TimeStampedBaseModel(models.Model):
     async def hard_delete(self, *args, **kwargs):
         await super().adelete(*args, **kwargs)
 
-    async def update(self, data: BaseModel | dict[str, Any], save: bool = False):
+    async def update(self, data: "UpdateData", save: bool = True):
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
-        editable_fields, changed = self._editable_fields(), False
+        editable_fields, changed = self._get_editable_fields(), False
 
         for key in to_update:
             if key in editable_fields:  # pragma: no branch
                 current_value, new_value = getattr(self, key), to_update[key]
-                if current_value != new_value:  # pragma: no branch
-                    setattr(self, key, new_value)
-                    changed = True
+                changed = current_value != new_value
+                setattr(self, key, new_value)
 
         if changed and save:  # pragma: no branch
             await self.asave()
 
+        return self
+
     @classmethod
-    def _editable_fields(cls) -> set[str]:
+    def _get_editable_fields(cls) -> set[str]:
         SYS_FIELDS = {
             "pk_id",
             "id",

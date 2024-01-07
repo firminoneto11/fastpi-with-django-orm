@@ -1,7 +1,13 @@
 from functools import lru_cache
+from typing import TYPE_CHECKING, Optional
 from uuid import uuid4
 
 from environs import Env
+
+from .exceptions import EntityNotFoundError
+
+if TYPE_CHECKING:
+    from django.db.models import Model
 
 
 def generate_uuid():
@@ -13,3 +19,12 @@ def get_env():
     env = Env()
     env.read_env()
     return env
+
+
+async def get_object_or_404[M: "Model"](
+    model_class: type[M], exc_message: Optional[str] = None, *args, **kwargs
+):
+    try:
+        return await model_class.objects.aget(**kwargs)
+    except model_class.DoesNotExist as exc:
+        raise EntityNotFoundError(detail=exc_message or "Object not found") from exc

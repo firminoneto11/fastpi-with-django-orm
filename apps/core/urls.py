@@ -1,40 +1,40 @@
 from fastapi import APIRouter
 
-from .controllers import (
-    create_product,
-    delete_product,
-    get_product_by_id,
-    list_products,
-    update_product,
-)
+from .controllers import ProductsController
 
 router = APIRouter(prefix="/v1", tags=["Core"])
 
 router.add_api_route(
-    path="/products", endpoint=list_products, methods=["GET"], status_code=200
+    path="/products",
+    endpoint=ProductsController.get,
+    methods=["GET"],
+    status_code=200,
 )
 
 router.add_api_route(
-    path="/products", endpoint=create_product, methods=["POST"], status_code=201
+    path="/products",
+    endpoint=ProductsController.post,
+    methods=["POST"],
+    status_code=201,
 )
 
 router.add_api_route(
     path="/products/{product_id}",
-    endpoint=get_product_by_id,
+    endpoint=ProductsController.get,
     methods=["GET"],
     status_code=200,
 )
 
 router.add_api_route(
     path="/products/{product_id}",
-    endpoint=update_product,
+    endpoint=ProductsController.put,
     methods=["PUT"],
     status_code=200,
 )
 
 router.add_api_route(
     path="/products/{product_id}",
-    endpoint=delete_product,
+    endpoint=ProductsController.delete,
     methods=["DELETE"],
     status_code=204,
 )
