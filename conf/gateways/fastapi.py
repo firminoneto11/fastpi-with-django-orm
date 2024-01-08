@@ -1,12 +1,12 @@
 from os import environ
 
-from django.core.asgi import get_asgi_application
+from django import setup as setup_django
 from fastapi import FastAPI
 
 
 def _setup_django_settings():
     environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
-    get_asgi_application()  # NOTE: We only call this so Django sets up the apps
+    setup_django(set_prefix=False)
 
 
 def get_fastapi_application():
