@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from httpx import AsyncClient
 
 
-pytestmark = [mark.django_db(transaction=True)]
+pytestmark = [mark.django_db(transaction=True), mark.anyio]
 
 
 @mark.integration

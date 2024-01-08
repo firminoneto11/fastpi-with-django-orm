@@ -1,26 +1,16 @@
-import asyncio as aio
-
 from httpx import AsyncClient
-from pytest import fixture
-from uvloop import EventLoopPolicy
+from pytest import fixture, mark, param
+
+pytestmark = [mark.anyio]
 
 
-@fixture(scope="session", autouse=True)
-def event_loop():
-    """Overrides pytest's default function scoped event loop"""
-    aio.set_event_loop_policy(EventLoopPolicy())
-
-    loop = aio.new_event_loop()
-    aio.set_event_loop(loop)
-
-    yield loop
-
-    if loop.is_running():
-        loop.stop()
-
-    loop.run_until_complete(loop.shutdown_asyncgens())
-    loop.run_until_complete(loop.shutdown_default_executor())
-    loop.close()
+@fixture(
+    params=[
+        param(("asyncio", {"use_uvloop": True}), id="asyncio+uvloop"),
+    ]
+)
+def anyio_backend(request):
+    return request.param
 
 
 @fixture(scope="session")
