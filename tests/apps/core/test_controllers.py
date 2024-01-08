@@ -5,6 +5,7 @@ from pytest import mark
 
 from apps.core.models import Product
 from apps.core.schemas import ProductSchema
+from shared.utils import reverse_url
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
@@ -26,7 +27,7 @@ async def test_list_products_should_list_registered_products(client: "AsyncClien
         for name in ("Product 1", "Product 2", "Product 3")
     ]
 
-    response = await client.get("api/v1/products")
+    response = await client.get(reverse_url("core:products:list"))
 
     assert response.status_code == 200
     assert response.json() == {"details": products}
@@ -38,7 +39,7 @@ async def test_list_products_should_return_empty(client: "AsyncClient"):
     Test if the endpoint returns an empty list when there are no registered products
     """
 
-    response = await client.get("api/v1/products")
+    response = await client.get(reverse_url("core:products:list"))
 
     assert response.status_code == 200
     assert response.json() == {"details": []}
@@ -53,7 +54,7 @@ async def test_create_products(client: "AsyncClient"):
     payload = {"name": "Product 1"}
     products_before = await Product.objects.acount()
 
-    response = await client.post("api/v1/products", json=payload)
+    response = await client.post(reverse_url("core:products:create"), json=payload)
 
     products_after = await Product.objects.acount()
     product_created = await Product.objects.afirst()
@@ -76,7 +77,7 @@ async def test_get_product_by_id_should_raise_404_when_product_is_not_found(
     Test if the endpoint raises a 404 when the product is not found
     """
 
-    response = await client.get("api/v1/products/1")
+    response = await client.get(reverse_url("core:products:retrieve", product_id=1))
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Product of id '1' not found"}
@@ -91,7 +92,9 @@ async def test_get_product_by_id_should_return_the_product(client: "AsyncClient"
     product = await Product.objects.acreate(name="Product 1")
     product = ProductSchema.model_validate(product).model_dump(mode="json")
 
-    response = await client.get(f"api/v1/products/{product['id']}")
+    response = await client.get(
+        reverse_url("core:products:retrieve", product_id=product["id"])
+    )
 
     assert response.status_code == 200
     assert response.json() == product
@@ -105,7 +108,9 @@ async def test_update_product_should_raise_404_when_product_is_not_found(
     Test if the endpoint raises a 404 when the product is not found
     """
 
-    response = await client.put("api/v1/products/1", json={"name": "Product 1"})
+    response = await client.put(
+        reverse_url("core:products:update", product_id=1), json={"name": "Product 1"}
+    )
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Product of id '1' not found"}
@@ -120,7 +125,8 @@ async def test_update_product_should_update_the_product(client: "AsyncClient"):
     product = await Product.objects.acreate(name="Product 1")
 
     response = await client.put(
-        f"api/v1/products/{product.id}", json={"name": "Product 2"}
+        reverse_url("core:products:update", product_id=product.id),
+        json={"name": "Product 2"},
     )
 
     product_updated = await Product.objects.afirst()
@@ -141,7 +147,7 @@ async def test_delete_product_should_raise_404_when_product_is_not_found(
     Test if the endpoint raises a 404 when the product is not found
     """
 
-    response = await client.delete("api/v1/products/1")
+    response = await client.delete(reverse_url("core:products:delete", product_id=1))
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Product of id '1' not found"}
@@ -155,7 +161,9 @@ async def test_delete_product_should_delete_the_product(client: "AsyncClient"):
 
     product = await Product.objects.acreate(name="Product 1")
 
-    response = await client.delete(f"api/v1/products/{product.id}")
+    response = await client.delete(
+        reverse_url("core:products:delete", product_id=product.id)
+    )
 
     qs = Product.objects.with_deleted()
     in_database = await Product.objects.fetch_qs(qs=qs)

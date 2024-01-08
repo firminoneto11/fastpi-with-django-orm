@@ -28,3 +28,9 @@ async def get_object_or_404[M: "Model"](
         return await model_class.objects.aget(**kwargs)
     except model_class.DoesNotExist as exc:
         raise EntityNotFoundError(detail=exc_message or "Object not found") from exc
+
+
+def reverse_url(controller_name: str, *args, **kwargs):
+    from conf.gateways.fastapi import application
+
+    return application.url_path_for(controller_name, **kwargs)
