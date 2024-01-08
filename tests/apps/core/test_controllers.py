@@ -30,7 +30,7 @@ async def test_list_products_should_list_registered_products(client: "AsyncClien
     response = await client.get(reverse_url("core:products:list"))
 
     assert response.status_code == 200
-    assert response.json() == {"details": products}
+    assert response.json() == products
 
 
 @mark.integration
@@ -42,7 +42,7 @@ async def test_list_products_should_return_empty(client: "AsyncClient"):
     response = await client.get(reverse_url("core:products:list"))
 
     assert response.status_code == 200
-    assert response.json() == {"details": []}
+    assert response.json() == []
 
 
 @mark.integration
