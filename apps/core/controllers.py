@@ -27,4 +27,4 @@ class ProductsController:
     @staticmethod
     async def delete(product_id: str) -> None:
         svc = ProductService()
-        return await svc.delete(product_id=product_id)
+        return await svc.delete_product(product_id=product_id)

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from pytest import mark
 
 from apps.core.models import Product
-from apps.core.schemas import Product as ProductSchema
+from apps.core.schemas import ProductSchema
 
 if TYPE_CHECKING:
     from httpx import AsyncClient

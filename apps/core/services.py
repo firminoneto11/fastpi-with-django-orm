@@ -17,7 +17,7 @@ class ProductService:
 
     async def get_product_by_id(self, product_id: str):
         return await get_object_or_404(
-            Product, f"Product of id {product_id!r} not found", product_id=product_id
+            Product, f"Product of id {product_id!r} not found", id=product_id
         )
 
     async def update_product(self, product_id: str, data: "ProductInputSchema"):
