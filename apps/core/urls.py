@@ -23,7 +23,7 @@ router.add_api_route(
 
 router.add_api_route(
     path="/products/{product_id}",
-    endpoint=ProductsController.get,
+    endpoint=ProductsController.get_one,
     methods=["GET"],
     status_code=200,
     name=f"{app_name}:{resource_name}:retrieve",

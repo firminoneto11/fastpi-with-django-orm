@@ -1,18 +1,17 @@
-from typing import Optional
-
 from .schemas import ProductInputSchema, ProductSchema
 from .services import ProductService
 
 
 class ProductsController:
     @staticmethod
-    async def get(
-        product_id: Optional[str] = None
-    ) -> dict[str, list[ProductSchema]] | ProductSchema:
+    async def get() -> list[ProductSchema]:
         svc = ProductService()
-        if product_id:
-            return await svc.get_product_by_id(product_id=product_id)
         return await svc.list_products()
+
+    @staticmethod
+    async def get_one(product_id: str) -> ProductSchema:
+        svc = ProductService()
+        return await svc.get_product_by_id(product_id=product_id)
 
     @staticmethod
     async def post(data: ProductInputSchema) -> ProductSchema:

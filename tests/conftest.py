@@ -4,11 +4,7 @@ from pytest import fixture, mark, param
 pytestmark = [mark.anyio]
 
 
-@fixture(
-    params=[
-        param(("asyncio", {"use_uvloop": True}), id="asyncio+uvloop"),
-    ]
-)
+@fixture(params=[param(("asyncio", {"use_uvloop": True}), id="asyncio+uvloop")])
 def anyio_backend(request):
     return request.param
 
