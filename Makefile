@@ -10,7 +10,7 @@ deps:
 	uv sync
 
 dev:
-	uvicorn conf.gateways.fastapi:application --reload --port 8001
+	uvicorn src.presentation.api.http.asgi:app --reload --port 8000
 
 migrations:
 	python manage.py makemigrations

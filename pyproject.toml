@@ -26,6 +26,7 @@ dev-dependencies = [
     "ruff>=0.6.5, <0.7",
     "pre-commit>=3.8.0, <3.9",
     "aiosqlite>=0.20.0, <0.21",
+    "django-stubs>=5.0.4, <5.1",
 ]
 
 # Ruff Configs
