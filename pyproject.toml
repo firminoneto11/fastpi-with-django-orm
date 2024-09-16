@@ -4,7 +4,15 @@ version = "0.0.1"
 description = "A PoC of using FastAPI alongside Django's ORM"
 readme = "README.md"
 requires-python = ">=3.12, <3.13"
-dependencies = []
+dependencies = [
+    "django>=5.1.1, <5.2",
+    "environs>=11.0.0, <11.1",
+    "fastapi>=0.114.2, <0.115",
+    "httptools>=0.6.1, <0.7",
+    "httpx>=0.27.2, <0.28",
+    "uvicorn>=0.30.6, <0.31",
+    "uvloop>=0.20.0, <0.21",
+]
 
 [tool.uv]
 dev-dependencies = [
