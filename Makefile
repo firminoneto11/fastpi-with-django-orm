@@ -3,11 +3,11 @@ cov_port := 5500
 url := http://localhost:$(cov_port)
 
 env:
-	rm -rf venv
-	python3.12 -m venv venv
+	rm -rf .venv/
+	uv venv -p 3.12
 
 deps:
-	poetry install --no-root
+	uv sync
 
 dev:
 	uvicorn conf.gateways.fastapi:application --reload --port 8001
