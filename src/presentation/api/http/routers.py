@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.wsgi import WSGIMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .controllers import misc_router
+from .controllers import misc_router, products_router
 
 if TYPE_CHECKING:
     from django.conf import LazySettings
@@ -19,7 +19,7 @@ class ApplicationMount:
     name: str
 
 
-def _get_wsgi_app(settings: "LazySettings"):
+def _get_wsgi_app():
     app = get_wsgi_application()
     return WSGIMiddleware(app=app)
 
@@ -27,7 +27,8 @@ def _get_wsgi_app(settings: "LazySettings"):
 def _get_app_v1(settings: "LazySettings"):
     app_v1 = FastAPI(**settings.GET_ASGI_SETTINGS())
 
-    app_v1.include_router(misc_router)
+    app_v1.include_router(misc_router, tags=["Misc"])
+    app_v1.include_router(products_router, tags=["Products"])
 
     return app_v1
 
@@ -42,7 +43,7 @@ def get_mounts(settings: "LazySettings"):
         # NOTE: Django Admin site mounts
         ApplicationMount(
             path=f"{settings.ADMIN_PATH}",
-            app=_get_wsgi_app(settings=settings),
+            app=_get_wsgi_app(),
             name="django-admin",
         ),
         ApplicationMount(

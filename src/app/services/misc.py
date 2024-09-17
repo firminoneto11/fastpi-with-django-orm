@@ -1,16 +1,11 @@
-from asgiref.sync import sync_to_async
-from django.db import connection
+from dataclasses import dataclass
+
+from src.app.ports.outbound.db import DBPort
 
 
+@dataclass
 class HealthCheckService:
-    @sync_to_async
-    def ping_database(self):
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT 1;")
-            return True
-        except:  # noqa
-            return False
+    db: DBPort
 
     async def __call__(self):
-        return {"healthy": await self.ping_database()}
+        return {"healthy": await self.db.ping()}

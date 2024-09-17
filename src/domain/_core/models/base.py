@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Any, Self, cast
 
-from asgiref.sync import sync_to_async
 from django.db import models
 from django.utils.timezone import now
 
@@ -15,9 +14,6 @@ if TYPE_CHECKING:
 class BaseManager[M: models.Model](models.Manager[M]):
     def get_queryset(self):
         return super().get_queryset().filter(deleted=False)
-
-    async def fetch_from_db(self, qs: models.QuerySet[M]):
-        return await sync_to_async(lambda: list(qs))()
 
     def retrieve_deleted(self):
         return super().get_queryset()
