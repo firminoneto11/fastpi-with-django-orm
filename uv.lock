@@ -227,7 +227,6 @@ dependencies = [
     { name = "httpx" },
     { name = "uvicorn" },
     { name = "uvloop" },
-    { name = "whitenoise" },
 ]
 
 [package.dev-dependencies]
@@ -254,7 +253,6 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27.2,<0.28" },
     { name = "uvicorn", specifier = ">=0.30.6,<0.31" },
     { name = "uvloop", specifier = ">=0.20.0,<0.21" },
-    { name = "whitenoise", specifier = ">=6.7.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -768,13 +766,4 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/84/8a/134f65c3d6066153b84fc176c58877acd8165ed0b79a149ff50502597284/virtualenv-20.26.4.tar.gz", hash = "sha256:c17f4e0f3e6036e9f26700446f85c76ab11df65ff6d8a9cbfad9f71aabfcf23c", size = 9385017 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5d/ea/12f774a18b55754c730c8383dad8f10d7b87397d1cb6b2b944c87381bb3b/virtualenv-20.26.4-py3-none-any.whl", hash = "sha256:48f2695d9809277003f30776d155615ffc11328e6a0a8c1f0ec80188d7874a55", size = 6013327 },
-]
-
-[[package]]
-name = "whitenoise"
-version = "6.7.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/64/b8/86451d63ef5e1a9c480b52759d9db25ba85c3420ebdaf039057ed152a4c1/whitenoise-6.7.0.tar.gz", hash = "sha256:58c7a6cd811e275a6c91af22e96e87da0b1109e9a53bb7464116ef4c963bf636", size = 24973 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/42/68400d8ad59f67a1f7e12c2f39089ce005f08f73333f3e215f3d5ed6453c/whitenoise-6.7.0-py3-none-any.whl", hash = "sha256:a1ae85e01fdc9815d12fa33f17765bc132ed2c54fa76daf9e39e879dd93566f6", size = 19905 },
 ]

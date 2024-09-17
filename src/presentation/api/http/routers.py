@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from django.core.wsgi import get_wsgi_application
 from fastapi import FastAPI
 from fastapi.middleware.wsgi import WSGIMiddleware
-from whitenoise import WhiteNoise  # type: ignore
+from fastapi.staticfiles import StaticFiles
 
 from .controllers import misc_router
 
@@ -15,14 +15,12 @@ if TYPE_CHECKING:
 @dataclass
 class ApplicationMount:
     path: str
-    app: FastAPI | WSGIMiddleware
+    app: FastAPI | WSGIMiddleware | StaticFiles
     name: str
 
 
 def _get_wsgi_app(settings: "LazySettings"):
     app = get_wsgi_application()
-    app = WhiteNoise(app, settings.STATIC_ROOT, settings.STATIC_URL)
-
     return WSGIMiddleware(app=app)
 
 
@@ -41,9 +39,15 @@ def get_mounts(settings: "LazySettings"):
             app=_get_app_v1(settings=settings),
             name="v1",
         ),
+        # NOTE: Django Admin site mounts
         ApplicationMount(
             path=f"{settings.ADMIN_PATH}",
             app=_get_wsgi_app(settings=settings),
-            name="admin",
+            name="django-admin",
+        ),
+        ApplicationMount(
+            path=f"{settings.STATIC_URL}",
+            app=StaticFiles(directory=settings.STATIC_ROOT),
+            name="django-static",
         ),
     ]
