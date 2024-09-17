@@ -7,8 +7,10 @@ from fastapi import FastAPI
 
 from shared.types import ASGIApp
 from src.infra.db import DBAdapter
-
-from .middleware import get_allowed_hosts_config, get_cors_config
+from src.presentation.api.http.middleware import (
+    get_allowed_hosts_config,
+    get_cors_config,
+)
 
 if TYPE_CHECKING:
     from django.conf import LazySettings
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
 
 @asynccontextmanager
 async def lifespan(app: ASGIApp):
-    await app.state.db.ping()
+    await app.state.db.ping(raise_exc=True)
     yield
 
 

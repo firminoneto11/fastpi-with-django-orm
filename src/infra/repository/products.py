@@ -26,9 +26,9 @@ class ProductRepoAdapter(ProductRepoPort):
             return product
 
     async def delete(self, id_: str):
-        exists = False
+        deleted = False
         if product := await self.retrieve(id=id_):
             await product.adelete()
-            exists = True
+            deleted = True
 
-        return exists
+        return deleted
