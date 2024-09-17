@@ -6,6 +6,7 @@ from django import setup
 from fastapi import FastAPI
 
 from shared.types import ASGIApp
+from src.infra.db import DBAdapter
 
 from .middleware import get_allowed_hosts_config, get_cors_config
 
@@ -15,10 +16,8 @@ if TYPE_CHECKING:
 
 @asynccontextmanager
 async def lifespan(app: ASGIApp):
-    # TODO: Ping db
-    # await app.state.db.connect()
+    await app.state.db.ping()
     yield
-    # await app.state.db.disconnect()
 
 
 class ASGIFactory:
@@ -54,6 +53,7 @@ class ASGIFactory:
     def setup_state(self, settings: "LazySettings"):
         from .routers import get_mounts
 
+        self.application.state.db = DBAdapter()
         self.application.state.mounted_applications = []
 
         for mount in get_mounts(settings=settings):

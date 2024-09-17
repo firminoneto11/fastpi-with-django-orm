@@ -7,9 +7,10 @@ type EnvChoices = Literal["development", "testing", "staging", "production"]
 
 
 if TYPE_CHECKING:
-    # from src.application.ports.outbound.db import SqlDBPort
     from fastapi.middleware.wsgi import WSGIMiddleware
     from fastapi.staticfiles import StaticFiles
+
+    from src.app.ports.outbound.db import DBPort
 
 
 class _ApplicationMountProtocol(Protocol):
@@ -20,7 +21,7 @@ class _ApplicationMountProtocol(Protocol):
 
 class _CustomAppState(State):
     mounted_applications: list[_ApplicationMountProtocol]
-    # db: "SqlDBPort"
+    db: "DBPort"
 
 
 class ASGIApp(FastAPI):
