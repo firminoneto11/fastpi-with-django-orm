@@ -28,53 +28,54 @@ class TimeStampedBaseModel(models.Model):
     pk_id = cast(int, models.BigAutoField(primary_key=True))
     id = models.CharField(unique=True, default=generate_uuid, max_length=36)
 
-    deleted = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     deleted_at = models.DateTimeField(null=True)
+    deleted = models.BooleanField(default=False)
 
-    async def adelete(self):  # type: ignore
-        # TODO: Emit signals
-        # TODO: Cascade delete to related objects by updating their deleted_at and deleted  # noqa
+    async def adelete(  # type: ignore
+        self,
+        soft: bool = True,
+        using: Any = None,
+        keep_parents: bool = False,
+    ):
+        if soft:
+            # TODO: Emit signals
+            # TODO: Cascade delete to related objects by updating their deleted_at and deleted  # noqa
 
-        self.deleted = True
-        self.deleted_at = now()
-        await self.asave()
+            self.deleted = True
+            self.deleted_at = now()
+            return await self.asave()
 
-    async def hard_delete(self, using: Any = None, keep_parents: bool = False):
         await super().adelete(using=using, keep_parents=keep_parents)
 
     async def update(self, data: "UpdateData", save: bool = True):
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")
-        editable_fields, changed = self._get_editable_fields(), False
+        changed = False
 
         for key in to_update:
-            if key in editable_fields:
+            if (key not in self._sys_fields) and (hasattr(self, key)):
                 current_value, new_value = getattr(self, key), to_update[key]
-                changed = current_value != new_value
-                setattr(self, key, new_value)
 
                 # TODO: How to deal with data that is not that simple to compare? Eg:
                 # relationships and concrete objects
+                if current_value != new_value:
+                    setattr(self, key, new_value)
+                    changed = True
 
         if changed and save:
             await self.asave()
 
-        return self
+        return changed
 
-    @classmethod
-    def _get_editable_fields(cls):
-        SYS_FIELDS = {
+    @property
+    def _sys_fields(self):
+        return {
             "pk_id",
             "id",
             "deleted",
             "created_at",
             "updated_at",
             "deleted_at",
-        }
-        return {
-            cast(str, field.name)
-            for field in cls._meta.fields
-            if field.name not in SYS_FIELDS
         }

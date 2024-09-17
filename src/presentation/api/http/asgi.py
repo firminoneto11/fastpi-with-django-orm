@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from shared.types import ASGIApp
 
 from .middleware import get_allowed_hosts_config, get_cors_config
-from .routers import get_mounts
 
 if TYPE_CHECKING:
     from django.conf import LazySettings
@@ -16,6 +15,7 @@ if TYPE_CHECKING:
 
 @asynccontextmanager
 async def lifespan(app: ASGIApp):
+    # TODO: Ping db
     # await app.state.db.connect()
     yield
     # await app.state.db.disconnect()
@@ -41,7 +41,7 @@ class ASGIFactory:
         setup(set_prefix=False)
 
     def __init__(self):
-        from django.conf import settings  # noqa
+        from django.conf import settings
 
         self.application = cast(
             ASGIApp,
@@ -52,6 +52,8 @@ class ASGIFactory:
         self.register_middleware(settings=settings)
 
     def setup_state(self, settings: "LazySettings"):
+        from .routers import get_mounts
+
         self.application.state.mounted_applications = []
 
         for mount in get_mounts(settings=settings):

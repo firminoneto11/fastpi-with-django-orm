@@ -13,23 +13,21 @@ class ProductRepoAdapter(ProductRepoPort):
 
         return [product async for product in qs]
 
-    async def retrieve(self, id_: str):
-        return await Product.objects.filter(id=id_).afirst()
+    async def retrieve(self, /, **criteria: Any):
+        if criteria:
+            return await Product.objects.filter(**criteria).afirst()
 
     async def create(self, data: dict[str, Any]):
         return await Product.objects.acreate(**data)
 
     async def update(self, id_: str, data: dict[str, Any]):
-        exists = False
-        if product := await self.retrieve(id_=id_):
+        if product := await self.retrieve(id=id_):
             await product.update(data=data)
-            exists = True
-
-        return exists
+            return product
 
     async def delete(self, id_: str):
         exists = False
-        if product := await self.retrieve(id_=id_):
+        if product := await self.retrieve(id=id_):
             await product.adelete()
             exists = True
 
