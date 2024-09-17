@@ -1,21 +1,23 @@
-from importlib import import_module as _import_module
+from importlib import import_module
 from typing import cast
 
-from shared.utils import get_env as _get_env
+from shared.utils import get_env
 
-from . import base
+from .base import ALLOWED_ENVIRONMENTS, ENVIRONMENT_PREFIX
 
-_ALLOWED_ENVIRONMENTS = ("production", "staging", "development", "testing")
+with get_env().prefixed(ENVIRONMENT_PREFIX) as _env:
+    module = cast(str, _env.str("ENVIRONMENT", "development")).lower().strip()  # type: ignore
 
-with _get_env().prefixed(base.ENVIRONMENT_PREFIX) as _env:
-    _module = cast(str, _env.str("ENVIRONMENT", "development")).lower().strip()  # type: ignore
+if module not in ALLOWED_ENVIRONMENTS:
+    raise RuntimeError(f"Invalid environment: {module!r}")
 
-if _module not in _ALLOWED_ENVIRONMENTS:
-    raise RuntimeError(f"Invalid environment: {_module!r}")
+settings = import_module(f"{__name__}.{module}")
 
-_settings = _import_module(f"{__name__}.{_module}")
-
-for variable in _settings.__dict__:
-    cond = (not variable.startswith("__")) and (not variable.startswith("_"))
+for variable in settings.__dict__:
+    cond = (
+        (not variable.startswith("__"))
+        and (not variable.startswith("_"))
+        and (variable.isupper())
+    )
     if (cond) and (variable not in globals()):
-        globals()[variable] = _settings.__dict__[variable]
+        globals()[variable] = settings.__dict__[variable]

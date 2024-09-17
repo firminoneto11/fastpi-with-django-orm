@@ -8,12 +8,12 @@ type EnvChoices = Literal["development", "testing", "staging", "production"]
 
 if TYPE_CHECKING:
     # from src.application.ports.outbound.db import SqlDBPort
-    ...
+    from fastapi.middleware.wsgi import WSGIMiddleware
 
 
 class _ApplicationMountProtocol(Protocol):
     path: str
-    app: FastAPI
+    app: "FastAPI | WSGIMiddleware"
     name: str
 
 

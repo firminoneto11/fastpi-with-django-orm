@@ -10,14 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-import tomllib as _tomllib
-from pathlib import Path as _Path
-from typing import cast as _cast
+import tomllib
+from pathlib import Path
+from typing import cast
 
-from shared.utils import get_env as _get_env
+from shared.utils import get_env
 
 with open("pyproject.toml", mode="rb") as stream:
-    pyproject: dict[str, str] = _tomllib.load(stream)["project"]
+    pyproject: dict[str, str] = tomllib.load(stream)["project"]
 
 APP_NAME = pyproject["name"]
 APP_DESCRIPTION = pyproject["description"]
@@ -31,12 +31,18 @@ TITLE = "Django + FastAPI"
 
 ENVIRONMENT_PREFIX = "PROJECT_"
 
+ALLOWED_ENVIRONMENTS = ("production", "staging", "development", "testing")
+
 ALLOWED_ORIGINS = ["*"]
 
-with _get_env().prefixed(ENVIRONMENT_PREFIX) as _env:
-    SECRET_KEY = _cast(str, _env.str("SECRET_KEY"))  # type: ignore
+API_PATH = "/api"
 
-BASE_DIR = _Path(__file__).resolve().parent.parent
+ADMIN_PATH = "/admin"
+
+with get_env().prefixed(ENVIRONMENT_PREFIX) as env:
+    SECRET_KEY = cast(str, env.str("SECRET_KEY"))  # type: ignore
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 DEBUG = False
 
@@ -51,7 +57,7 @@ BASE_APPS = [
 
 THIRD_PARTY_APPS = []
 
-LOCAL_APPS = ["src.domain.models"]
+LOCAL_APPS = ["src.domain._core"]
 
 INSTALLED_APPS = BASE_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -84,7 +90,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "conf.wsgi.application"
-# ASGI_APPLICATION = "conf.asgi.application"
+ASGI_APPLICATION = "conf.asgi.application"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -127,7 +133,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-def get_asgi_settings(main_mount: bool = False):
+def GET_ASGI_SETTINGS(main_mount: bool = False):
     return {
         "title": APP_NAME,
         "description": APP_DESCRIPTION,

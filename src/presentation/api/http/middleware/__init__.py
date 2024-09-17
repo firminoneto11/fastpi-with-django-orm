@@ -1,2 +1,2 @@
-from .allowed_hosts import allowed_hosts_middleware_configuration  # noqa
-from .cors import cors_middleware_configuration  # noqa
+from .cors import get_cors_config  # noqa
+from .allowed_hosts import get_allowed_hosts_config  # noqa

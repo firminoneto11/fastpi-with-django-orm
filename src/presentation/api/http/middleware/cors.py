@@ -1,10 +1,16 @@
-from django.conf import settings
+from typing import TYPE_CHECKING
+
 from fastapi.middleware.cors import CORSMiddleware
 
-cors_middleware_configuration = {
-    "middleware_class": CORSMiddleware,
-    "allow_origins": settings.ALLOWED_ORIGINS,
-    "allow_credentials": True,
-    "allow_methods": ["*"],
-    "allow_headers": ["*"],
-}
+if TYPE_CHECKING:
+    from django.conf import LazySettings
+
+
+def get_cors_config(settings: "LazySettings"):
+    return {
+        "middleware_class": CORSMiddleware,
+        "allow_origins": settings.ALLOWED_ORIGINS,
+        "allow_credentials": True,
+        "allow_methods": ["*"],
+        "allow_headers": ["*"],
+    }
