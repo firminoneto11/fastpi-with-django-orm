@@ -1,14 +1,12 @@
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import Field
-
 from .base import CamelModel
 
 
 class CreateAndUpdateProductSchema(CamelModel):
-    name: str = Field(min_length=1, max_length=255)
-    price: Decimal = Field(max_digits=10, decimal_places=2)
+    name: str
+    price: Decimal
 
 
 class ProductSchemaOutput(CamelModel):

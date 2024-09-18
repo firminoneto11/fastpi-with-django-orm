@@ -44,6 +44,10 @@ class ASGIFactory:
     def __init__(self):
         from django.conf import settings
 
+        # TODO: Add an exception handler for the error DRF raises when something is in-
+        # valid. Error name:
+        # rest_framework.exceptions.ValidationError
+
         self.application = cast(
             ASGIApp,
             FastAPI(**settings.GET_ASGI_SETTINGS(main_mount=True), lifespan=lifespan),  # type: ignore

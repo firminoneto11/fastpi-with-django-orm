@@ -55,9 +55,14 @@ BASE_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "adrf",
+]
 
-LOCAL_APPS = ["src.domain._core"]
+LOCAL_APPS = [
+    "src.domain._core",
+]
 
 INSTALLED_APPS = BASE_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

@@ -20,10 +20,11 @@ class ProductRepoAdapter(ProductRepoPort):
     async def create(self, data: dict[str, Any]):
         return await Product.objects.acreate(**data)
 
-    async def update(self, id_: str, data: dict[str, Any]):
-        if product := await self.retrieve(id=id_):
-            await product.update(data=data)
-            return product
+    async def update(self, id_: str, data: dict[str, Any]):  # type: ignore
+        raise NotImplementedError
+        # if product := await self.retrieve(id=id_):
+        #     await product.update(data=data)
+        #     return product
 
     async def delete(self, id_: str):
         deleted = False

@@ -15,9 +15,6 @@ class BaseManager[M: models.Model](models.Manager[M]):
     def get_queryset(self):
         return super().get_queryset().filter(deleted=False)
 
-    def retrieve_deleted(self):
-        return super().get_queryset()
-
 
 class TimeStampedBaseModel(models.Model):
     objects = BaseManager[Self]()
