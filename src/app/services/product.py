@@ -29,7 +29,9 @@ class ProductService:
 
     async def update(self, id_: str, data: CreateAndUpdateProductSchema):
         if product := await self.repo.retrieve(id=id_):
-            serializer = ProductSerializer(data=data.model_dump())
+            serializer = ProductSerializer(
+                instance=product, data=data.model_dump(), partial=True
+            )
 
             await serializer.async_is_valid(raise_exception=True)
 
