@@ -33,7 +33,7 @@ def _get_app_v1(settings: "LazySettings"):
     return app_v1
 
 
-def get_mounts(settings: "LazySettings"):
+def get_mounted_apps(settings: "LazySettings"):
     return [
         ApplicationMount(
             path=f"{settings.API_PATH}/v1",

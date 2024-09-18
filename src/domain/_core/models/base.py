@@ -16,6 +16,10 @@ class BaseManager[M: models.Model](models.Manager[M]):
         return super().get_queryset().filter(deleted=False)
 
 
+def generate_string_uuid():
+    return str(generate_uuid(hexa=False))
+
+
 class TimeStampedBaseModel(models.Model):
     objects = BaseManager[Self]()
 
@@ -23,7 +27,7 @@ class TimeStampedBaseModel(models.Model):
         abstract = True
 
     pk_id = cast(int, models.BigAutoField(primary_key=True))
-    id = models.CharField(unique=True, default=generate_uuid, max_length=36)
+    id = models.CharField(unique=True, default=generate_string_uuid, max_length=36)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

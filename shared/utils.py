@@ -1,23 +1,24 @@
 from datetime import datetime, timezone
 from functools import lru_cache
 from typing import Literal, overload
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from environs import Env
 
 
-@lru_cache(maxsize=1)
-def get_env():
-    env = Env()
-    env.read_env()
-    return env
+@overload
+def generate_uuid(hexa: Literal[True]) -> str: ...
 
 
-def generate_uuid(hexadecimal: bool = False):
+@overload
+def generate_uuid(hexa: Literal[False]) -> UUID: ...
+
+
+def generate_uuid(hexa: bool = False):
     uuid = uuid4()
-    if hexadecimal:
+    if hexa:
         return uuid.hex
-    return str(uuid)
+    return uuid
 
 
 @overload
@@ -33,3 +34,10 @@ def utc_timestamp(unix: bool = False):
     if unix:
         utc_now = int(utc_now.timestamp())
     return utc_now
+
+
+@lru_cache(maxsize=1)
+def get_env():
+    env = Env()
+    env.read_env()
+    return env
