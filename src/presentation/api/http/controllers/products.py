@@ -1,9 +1,10 @@
 from fastapi import APIRouter, status
 
 from src.app.services.product import ProductService
-from src.domain.schemas.products import (
-    CreateAndUpdateProductSchema,
-    ProductSchemaOutput,
+from src.domain.schemas import (
+    CreateProductSchema,
+    OutputProductSchema,
+    UpdateProductSchema,
 )
 from src.infra.repository import ProductRepoAdapter
 
@@ -16,7 +17,7 @@ router = APIRouter()
     name=f"{resource_name}:list",
     status_code=status.HTTP_200_OK,
     summary="Lists the products from the database",
-    response_model=list[ProductSchemaOutput],
+    response_model=list[OutputProductSchema],
 )
 async def list_():
     repo = ProductRepoAdapter()
@@ -29,9 +30,9 @@ async def list_():
     name=f"{resource_name}:create",
     status_code=status.HTTP_201_CREATED,
     summary="Creates a new product",
-    response_model=ProductSchemaOutput,
+    response_model=OutputProductSchema,
 )
-async def create(data: CreateAndUpdateProductSchema):
+async def create(data: CreateProductSchema):
     repo = ProductRepoAdapter()
     svc = ProductService(repo=repo)
     return await svc.create(data=data)
@@ -42,7 +43,7 @@ async def create(data: CreateAndUpdateProductSchema):
     name=f"{resource_name}:retrieve",
     status_code=status.HTTP_200_OK,
     summary="Retrieves a single product from the database",
-    response_model=ProductSchemaOutput,
+    response_model=OutputProductSchema,
 )
 async def retrieve(id: str):
     repo = ProductRepoAdapter()
@@ -55,9 +56,9 @@ async def retrieve(id: str):
     name=f"{resource_name}:update",
     status_code=status.HTTP_200_OK,
     summary="Updates a product",
-    response_model=ProductSchemaOutput,
+    response_model=OutputProductSchema,
 )
-async def update(id: str, data: CreateAndUpdateProductSchema):
+async def update(id: str, data: UpdateProductSchema):
     repo = ProductRepoAdapter()
     svc = ProductService(repo=repo)
     return await svc.update(id_=id, data=data)

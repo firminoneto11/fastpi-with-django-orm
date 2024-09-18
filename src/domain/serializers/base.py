@@ -3,5 +3,5 @@ from asgiref.sync import sync_to_async
 
 
 class BaseAsyncModelSerializer(ModelSerializer):
-    async def async_is_valid(self, raise_exception: bool = False):
+    async def async_is_valid(self, raise_exception: bool = True):
         return await sync_to_async(self.is_valid)(raise_exception=raise_exception)
