@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
+from uuid import UUID
 
 from pydantic import Field
 
@@ -18,7 +19,7 @@ class UpdateProductSchema(CamelModel):
 
 
 class OutputProductSchema(CamelModel):
-    id: str
+    id: UUID
     created_at: datetime
     updated_at: datetime
     name: str

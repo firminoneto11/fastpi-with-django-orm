@@ -1,24 +1,23 @@
 from datetime import datetime, timezone
 from functools import lru_cache
 from typing import Literal, overload
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from environs import Env
+from uuid_extensions import uuid7  # type: ignore
 
 
 @overload
-def generate_uuid(hexa: Literal[True]) -> str: ...
+def generate_uuid_v7(as_string: Literal[True] = False) -> str: ...  # type: ignore
 
 
 @overload
-def generate_uuid(hexa: Literal[False]) -> UUID: ...
+def generate_uuid_v7(as_string: Literal[False] = False) -> UUID: ...
 
 
-def generate_uuid(hexa: bool = False):
-    uuid = uuid4()
-    if hexa:
-        return uuid.hex
-    return uuid
+def generate_uuid_v7(as_string: bool = False):
+    uuid = uuid7()
+    return str(uuid) if as_string else uuid
 
 
 @overload

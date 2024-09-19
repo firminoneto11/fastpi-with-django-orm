@@ -1,9 +1,9 @@
-from typing import TYPE_CHECKING, Any, Self, cast
+from typing import TYPE_CHECKING, Any, Self
 
 from django.db import models
 from django.utils.timezone import now
 
-from shared.utils import generate_uuid
+from shared.utils import generate_uuid_v7
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -16,18 +16,13 @@ class BaseManager[M: models.Model](models.Manager[M]):
         return super().get_queryset().filter(deleted=False)
 
 
-def generate_string_uuid():
-    return str(generate_uuid(hexa=False))
-
-
 class TimeStampedBaseModel(models.Model):
     objects = BaseManager[Self]()
 
     class Meta:
         abstract = True
 
-    pk_id = cast(int, models.BigAutoField(primary_key=True))
-    id = models.CharField(unique=True, default=generate_string_uuid, max_length=36)
+    id = models.UUIDField(verbose_name="ID", primary_key=True, default=generate_uuid_v7)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

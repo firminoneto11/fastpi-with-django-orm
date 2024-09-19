@@ -9,7 +9,7 @@ class Product(TimeStampedBaseModel):
     class Meta:  # type: ignore
         verbose_name = "Product"
         verbose_name_plural = "Products"
-        ordering = ("-pk_id",)
+        ordering = ("-id",)
 
     name = models.CharField(verbose_name="Name", max_length=255, unique=True)
     price = models.DecimalField(
