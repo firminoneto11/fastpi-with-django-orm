@@ -4,12 +4,11 @@ from typing import TYPE_CHECKING, cast
 
 from django import setup
 from fastapi import FastAPI
-from rest_framework.exceptions import ValidationError
 
 from shared.types import ASGIApp, GetMountedApps
 from src.infra.db import DBAdapter
 
-from .exception_handlers import drf_validation_error_handler
+from .exception_handlers import PAIRS
 from .middleware import get_allowed_hosts_config, get_cors_config
 
 if TYPE_CHECKING:
@@ -69,14 +68,7 @@ class ASGIFactory:
         self.application.add_middleware(**get_cors_config(settings=settings))  # type: ignore
 
     def setup_exception_handlers(self):
-        pairs = [
-            {
-                "exc": ValidationError,
-                "handler": drf_validation_error_handler,
-            },
-        ]
-
-        for pair in pairs:
+        for pair in PAIRS:
             for mount in self.application.state.mounted_applications:
                 if isinstance(mount.app, FastAPI):
                     mount.app.add_exception_handler(pair["exc"], pair["handler"])  # type: ignore

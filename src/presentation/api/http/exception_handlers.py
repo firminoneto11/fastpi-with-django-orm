@@ -9,3 +9,11 @@ if TYPE_CHECKING:
 
 async def drf_validation_error_handler(request: "Request", exc: "ValidationError"):
     return JSONResponse(status_code=400, content=exc.detail)
+
+
+PAIRS = (
+    {
+        "exc": ValidationError,
+        "handler": drf_validation_error_handler,
+    },
+)
