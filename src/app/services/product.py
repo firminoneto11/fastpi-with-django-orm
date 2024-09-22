@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.app.exceptions import ObjectNotFound
-from src.app.ports.inbound.repository import ProductRepoPort
+from src.app.ports.outbound.repository import ProductRepoPort
 from src.domain.schemas import CreateProductSchema, UpdateProductSchema
 from src.domain.serializers import ProductSerializer
 

@@ -24,6 +24,8 @@ class TimeStampedBaseModel(models.Model):
 
     id = models.UUIDField(verbose_name="ID", primary_key=True, default=generate_uuid_v7)
 
+    # TODO: Find out a way to place the subclass' fields here on a table level
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
