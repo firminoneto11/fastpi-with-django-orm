@@ -58,6 +58,7 @@ BASE_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "adrf",
+    "pgtrigger",
 ]
 
 LOCAL_APPS = [

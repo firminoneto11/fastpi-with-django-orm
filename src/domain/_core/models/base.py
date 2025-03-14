@@ -1,26 +1,56 @@
 from typing import TYPE_CHECKING, Any, Self
 
+import pgtrigger
+from asgiref.sync import sync_to_async
 from django.db import models
+from django.db.transaction import atomic as initiate_transaction
 from django.utils.timezone import now
 
 from shared.utils import generate_uuid_v7
 
+models.OneToOneRel
 if TYPE_CHECKING:
     from pydantic import BaseModel
 
     type UpdateData = BaseModel | dict[str, Any]
 
 
-class BaseManager[M: models.Model](models.Manager[M]):
+@sync_to_async
+def _cascade_soft_deletion(parent: "TimeStampedBaseModel"):
+    with initiate_transaction():
+        for field in parent._meta.get_fields(include_hidden=True):
+            should_cascade = (field.one_to_many or field.one_to_one) and (
+                field.auto_created and (not field.concrete)
+            )
+            if should_cascade:
+                get_manager = getattr(parent, field.get_accessor_name, None)  # type: ignore
+
+                related_manager = (  # type: ignore
+                    get_manager() if callable(get_manager) else None  # type: ignore
+                )
+
+                if related_manager:
+                    related_manager.all().update(  # type: ignore
+                        deleted=parent.deleted,
+                        deleted_at=parent.deleted_at,
+                    )
+
+
+class FilterDeletedManager[M: models.Model](models.Manager[M]):
     def get_queryset(self):
-        return super().get_queryset().filter(deleted=False)
+        return super().get_queryset().exclude(deleted=True).exclude(is_active=False)
 
 
 class TimeStampedBaseModel(models.Model):
-    objects = BaseManager[Self]()
+    objects = FilterDeletedManager[Self]()
+    _all_objects = models.Manager[Self]()
 
     class Meta:
         abstract = True
+        default_manager_name = "_all_objects"
+        triggers = [
+            pgtrigger.SoftDelete(name="soft_delete", field="is_active", value=False),
+        ]
 
     id = models.UUIDField(verbose_name="ID", primary_key=True, default=generate_uuid_v7)
 
@@ -31,22 +61,27 @@ class TimeStampedBaseModel(models.Model):
 
     deleted_at = models.DateTimeField(null=True)
     deleted = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
-    async def adelete(  # type: ignore
-        self,
-        soft: bool = True,
-        using: Any = None,
-        keep_parents: bool = False,
-    ):
-        if soft:
-            # TODO: Emit signals
-            # TODO: Cascade delete to related objects by updating their deleted_at and deleted  # noqa
+    models.ForeignKey
+    models.OneToOneField
 
-            self.deleted = True
-            self.deleted_at = now()
-            return await self.asave()
+    # async def adelete(  # type: ignore
+    #     self,
+    #     soft: bool = True,
+    #     using: Any = None,
+    #     keep_parents: bool = False,
+    # ):
+    #     if soft:
+    #         # TODO: Emit signals
 
-        await super().adelete(using=using, keep_parents=keep_parents)
+    #         self.deleted = True
+    #         self.deleted_at = now()
+
+    #         await _cascade_soft_deletion(parent=self)
+    #         return await self.asave()
+
+    #     await super().adelete(using=using, keep_parents=keep_parents)
 
     async def update(self, data: "UpdateData", save: bool = True):
         to_update = data if isinstance(data, dict) else data.model_dump(mode="json")

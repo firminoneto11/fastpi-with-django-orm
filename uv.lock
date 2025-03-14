@@ -195,6 +195,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-pgtrigger"
+version = "4.12.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3c/52/9098c175589ebb82cfbd873ece305b09bbe82fb86fdad29ef8abbb54222b/django_pgtrigger-4.12.2.tar.gz", hash = "sha256:831fd03cde31b4d7192a8c831527f062940c82faf4ccff688ad1975806087889", size = 30486 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7b/89/f686718155e9f7ba9f98fd9ea55122bc609195465c74a771e8798cfffaab/django_pgtrigger-4.12.2-py3-none-any.whl", hash = "sha256:1e1f6bf448997ee02a5af07d62a23b10085055e3b7e21062c8480c0b3b56f475", size = 33852 },
+]
+
+[[package]]
 name = "django-stubs"
 version = "5.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -285,6 +297,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "adrf" },
     { name = "django" },
+    { name = "django-pgtrigger" },
     { name = "djangorestframework" },
     { name = "environs" },
     { name = "fastapi" },
@@ -314,6 +327,7 @@ dev = [
 requires-dist = [
     { name = "adrf", specifier = ">=0.1.7,<0.2" },
     { name = "django", specifier = ">=5.1.1,<5.2" },
+    { name = "django-pgtrigger", specifier = ">=4.12.2" },
     { name = "djangorestframework", specifier = ">=3.15.2,<3.16" },
     { name = "environs", specifier = ">=11.0.0,<11.1" },
     { name = "fastapi", specifier = ">=0.114.2,<0.115" },
